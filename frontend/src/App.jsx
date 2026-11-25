@@ -4,7 +4,7 @@ import { LayoutDashboard, Package, Upload, ShieldCheck, Bot, LogOut, Plus, Searc
 import './styles.css'
 import './workflow.css'
 
-const API='http://localhost:5000/api'
+const API='/api'
 
 function App(){
  const [token,setToken]=useState(localStorage.getItem('ww_token'))

@@ -2,7 +2,7 @@ import os, re, json, sqlite3, hashlib, secrets
 from datetime import datetime, timedelta, date
 from pathlib import Path
 
-from flask import Flask, request, jsonify, send_file, g
+from flask import Flask, request, jsonify, send_file, send_from_directory, g
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 from PIL import Image, ImageStat
@@ -22,11 +22,12 @@ except Exception:
     canvas = None
 
 BASE = Path(__file__).resolve().parent
-UPLOAD_DIR = BASE / 'uploads'
-DB_PATH = BASE / 'warrantywise.db'
+FRONTEND_DIST = BASE.parent / 'frontend' / 'dist'
+UPLOAD_DIR = Path(os.environ.get('WARRANTYWISE_UPLOAD_DIR', str(BASE / 'uploads')))
+DB_PATH = Path(os.environ.get('WARRANTYWISE_DB_PATH', str(BASE / 'warrantywise.db')))
 UPLOAD_DIR.mkdir(exist_ok=True)
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder=str(FRONTEND_DIST), static_url_path='')
 CORS(app, resources={r'/api/*': {'origins': '*'}})
 
 CATEGORIES = {
@@ -89,6 +90,12 @@ def init_db():
     conn.close()
 
 init_db()
+
+@app.get('/')
+def frontend():
+    if not (FRONTEND_DIST / 'index.html').is_file():
+        return jsonify({'error': 'Frontend build not found'}), 404
+    return send_from_directory(FRONTEND_DIST, 'index.html')
 
 TOKEN_NAME = 'Authorization'
 def current_user():
@@ -391,4 +398,4 @@ def claim_pdf(cid):
 def health(): return jsonify({'status':'ok','timestamp':datetime.now().isoformat()})
 
 if __name__=='__main__':
-    app.run(debug=True,port=5000)
+    app.run(debug=os.environ.get('WARRANTYWISE_DEBUG') == '1',port=5000)
