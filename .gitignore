@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+.env
+.env.*
+!.env.example
+
+backend/*.db
+backend/uploads/
+
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/

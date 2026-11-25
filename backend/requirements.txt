@@ -1,0 +1,8 @@
+Flask==3.1.2
+Flask-Cors==6.0.1
+scikit-learn==1.7.2
+Pillow==12.0.0
+PyMuPDF==1.26.6
+ReportLab==4.4.5
+pytesseract==0.3.13
+numpy==2.3.5
